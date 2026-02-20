@@ -151,18 +151,20 @@ affy_to_hgnc <- function(affy_vector) {
 #' `2 204340_at   TMEM187 good        6.40      ...`
 
 reduce_data <- function(expr_tibble, names_ids, good_genes, bad_genes){
-  match_positions <- match(result_tib$probe, gene_names$affy_id)
-  expr_with_categories <- result_tib %>%
+  match_positions <- match(expr_tibble$probe, names_ids$affy_id)
+  
+  expr_with_categories <- expr_tibble %>%
     mutate(
-      hgnc_symbol = gene_names$hgnc_symbol[match_positions],  
+      hgnc_symbol = names_ids$hgnc_symbol[match_positions],  
       gene_set = case_when(
-        hgnc_symbol %in% goodGenes ~ "good",
-        hgnc_symbol %in% badGenes ~ "bad",
-        TRUE ~ NA_character_  
+        hgnc_symbol %in% good_genes ~ "good",
+        hgnc_symbol %in% bad_genes ~ "bad",
+        TRUE ~ NA_character_ 
       )
     ) %>%
     filter(!is.na(gene_set)) %>% 
     select(probe, hgnc_symbol, gene_set, everything())
+  
   return(expr_with_categories)
 }
 
