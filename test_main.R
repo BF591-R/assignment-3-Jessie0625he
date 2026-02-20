@@ -1,10 +1,11 @@
 #!/usr/bin/Rscript
 # if you change the name of your script, this line must be changed as well
-source("main.R")
+# install.packages("testthat")
+source("/projectnb/bf530/students/xjin4/assignment-3-Jessie0625he/main.R")
 library(testthat)
 
 describe("load_expression()", {
-  result_tib <- load_expression('data/example_intensity_data_subset.csv')
+  result_tib <- load_expression('/projectnb/bf530/students/xjin4/assignment-3-Jessie0625he/data/example_intensity_data_subset.csv')
   
   it("returns a tibble, not a dataframe", {
     expect_true(is_tibble(result_tib))

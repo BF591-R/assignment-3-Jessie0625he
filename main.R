@@ -101,8 +101,10 @@ filter_15 <- function(tibble){
 #' `4        1553551_s_at      MT-ND2`
 #' `5           202860_at     DENND4B`
 affy_to_hgnc <- function(affy_vector) {
-    human_mart <- useEnsembl(biomart = "ensembl",
-                             dataset = "hsapiens_gene_ensembl") #load human Ensembl dataset
+  human_mart <- useEnsembl(biomart = "ensembl",
+                           dataset = "hsapiens_gene_ensembl", 
+                           host = "https://useast.ensembl.org")
+     
     affy_vector <- affy_vector %>% 
       pull(1)
     gene_info <- getBM (
