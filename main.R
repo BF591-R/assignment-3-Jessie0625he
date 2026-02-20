@@ -104,22 +104,21 @@ affy_to_hgnc <- function(affy_vector) {
   human_mart <- useEnsembl(biomart = "ensembl",
                            dataset = "hsapiens_gene_ensembl", 
                            host = "https://useast.ensembl.org")
-     
-    affy_vector <- affy_vector %>% 
-      pull(1)
-    gene_info <- getBM (
-      attributes = c("affy_hg_u133_plus_2", "hgnc_symbol"),  # What we want
-      filters = "affy_hg_u133_plus_2",                            # What we're searching by
-      values = affy_vector,                                 # The specific genes (mgi_symbol) to search for
-      mart = human_mart                                  # Which database
-    )
-    hgnc_tibble <- gene_info %>% 
-      as_tibble() %>% 
-      rename(
-        affy_id = affy_hg_u133_plus_2,
-        hgnc_symbol = hgnc_symbol
-      ) %>%
-      return(hgnc_tibble)
+  affy_vector <- affy_vector %>% 
+    pull(1)
+  gene_info <- getBM (
+    attributes = c("affy_hg_u133_plus_2", "hgnc_symbol"),  # What we want
+    filters = "affy_hg_u133_plus_2",                            # What we're searching by
+    values = affy_vector,                                 # The specific genes (mgi_symbol) to search for
+    mart = human_mart                                  # Which database
+  )
+  hgnc_tibble <- gene_info %>% 
+    as_tibble() %>% 
+    rename(
+      affy_hg_u133_plus_2 = affy_hg_u133_plus_2,
+      hgnc_symbol = hgnc_symbol
+    ) %>%
+    return(hgnc_tibble)
 }
 
 #' Reduce a tibble of expression data to only the rows in good_genes or bad_genes.
@@ -151,23 +150,21 @@ affy_to_hgnc <- function(affy_vector) {
 #' `  <chr>       <chr>   <chr>       <dbl>     ...`
 #' `1 202860_at   DENND4B good        7.16      ...`
 #' `2 204340_at   TMEM187 good        6.40      ...`
-
 reduce_data <- function(expr_tibble, names_ids, good_genes, bad_genes){
-  match_positions <- match(expr_tibble$probe, names_ids$affy_id)
-  
-  expr_with_categories <- expr_tibble %>%
+  match_positions <- match(expr_tibble$probe, names_ids$affy_hg_u133_plus_2)
+  result <- expr_tibble %>%
     mutate(
-      hgnc_symbol = names_ids$hgnc_symbol[match_positions],  
+      hgnc_symbol = names_ids$hgnc_symbol[match_positions],
       gene_set = case_when(
         hgnc_symbol %in% good_genes ~ "good",
         hgnc_symbol %in% bad_genes ~ "bad",
-        TRUE ~ NA_character_ 
+        TRUE ~ NA_character_
       )
     ) %>%
-    filter(!is.na(gene_set)) %>% 
+    filter(!is.na(gene_set)) %>%
     select(probe, hgnc_symbol, gene_set, everything())
   
-  return(expr_with_categories)
+  return(result)
 }
 
 #' Convert a wide format tibble to long for easy plotting
@@ -181,13 +178,12 @@ reduce_data <- function(expr_tibble, names_ids, good_genes, bad_genes){
 #'
 #' @examples
 convert_to_long <- function(tibble) {
-  id_cols = c("probe","hgnc_symbol", "gene_set")
-  long_tibble <- tibble %>% 
+  long_data <- tibble %>%
     pivot_longer(
-      cols = -all_of(id_cols),
+      cols = where(is.numeric),
       names_to = "sample",
       values_to = "values"
     )
-  return(long_tibble)
+  return(long_data)
 }
 

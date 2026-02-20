@@ -109,7 +109,7 @@ script with high quality visual aesthetics. Do not use default ggplot colors.
 <!-- TODO: Add a figure -->
 ```{r}
 # use source to load your functions from main.R into this document.
-source("main.R")
+source("/projectnb/bf530/students/xjin4/assignment-3-Jessie0625he/main.R")
 library(tidyverse)
 ```
 ## Loading CSV with `load_expression()`
@@ -242,5 +242,4 @@ g <-ggplot(data = long_format_data, aes(x=hgnc_symbol, y=values, fill=gene_set))
     axis.text.x = element_text(angle = 45, hjust = 1, size = 10)
     )
 boxplot_g
-
 ```
