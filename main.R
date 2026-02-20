@@ -182,7 +182,7 @@ convert_to_long <- function(tibble) {
     pivot_longer(
       cols = where(is.numeric),
       names_to = "sample",
-      values_to = "values"
+      values_to = "value"
     )
   return(long_data)
 }
